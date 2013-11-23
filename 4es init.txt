@@ -1,0 +1,27 @@
+google tv
+second street
+a person with a phone in front of a tv 
+
+things evolved: some of our ideas evolved bla bla 
+
+we have two sets of devices: smart devices in homes (raps pi) -> smart TV core
+
+you can stick it to the TV
+
+or you can use it for home automation / expansion boards / blabla 
+
+we reavhed what Java wanted to reach 10 years ago - a coffee-connected Internet machine 
+
+mobile phone is an identification device; every member of a family has his own mob phone; we can think of microsocial applications -> family-based
+
+smart devices that can be connected to the internet; each member of the family has his own phone; depending on the place he/she pays in the family; how do we brindge them and how do they interact
+
+the phone is identification and kakaia-ta hernea also 
+
+moving content from a phone to a screen
+
+via cloud services 
+
+if you can think of any idea of a system where you have a cloud services (all the cloud at your feet) -> every smart device can be plugged in and it will display tweets, it also has to know who is using it 
+
+it's about a family and a system where you have 1+ smart devices and 1+ phones connected to cloud devices; identification; phones have devices; GPS for tracking; etc 
