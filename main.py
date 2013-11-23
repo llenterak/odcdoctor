@@ -4,125 +4,13 @@ import tkSimpleDialog
 from Tkinter import *
 from tooltip import *
 
-
-class I2C_emulator(object):
-    def __init__(self):
-        logging.info("i2c emulator started")
-
-
-class SPI_emulator(object):
-    def __init__(self):
-        print "spi emulator started"
-
-
-class OneWire_emulator(object):
-    def __init__(self):
-        print "spi emulator started"
-
-
-class DevCommunicator(object):
-
-    def __init__(self):
-        self.innerMap = {}
-        self.innerMap['fridge'] = "fridgeHandler"
-        self.innerMap['door'] = "doorHandler"
-        self.innerMap['clothing iron'] = "ironHandler"
-
-
-    def fridgeHandler(self, message): 
-        if (message == "turn off"):
-            return "fridge turned off"
-        if (message == "turn on"):
-            return "fridge turned on"
-        else:
-            return "unknown message to fridge"
-
-    def doorHandler(self, message):
-        if (message == "unlock"):
-            return "door unlocked"
-        if (message == "lock"):
-            return "door locked"
-        else:
-            return "unknown message to door"
-
-    def ironHandler(self, message):
-        if (message == "turn off"):
-            return "clothing iron turned off"
-        if (message == "turn on"):
-            return "clothing iron turned on. Why would you do that remotely? 0_o"
-        else:
-            return "unknown message to clothing iron"
-    
-    def askDevice(self, deviceName, message):
-        try:
-            print getattr(self,self.innerMap[str(deviceName)])(message)
-        except(KeyError):
-            print("Device not bound to Raspberry hub!");
-
-
-class User(object):
-    def __init__(self, name, googleCloudId):
-        self.name = name
-        self.googleCloudId = googleCloudId
-
-
-class Users(object):
-    def __init__(self):
-        table = []
-
-    def addUser(self, name, googleCloudId):
-        self.table.append(User(name, googleCloudId))
-
-    def removeUser(self, name):
-        for user in self.table:
-            if (user.name == name):
-                self.table.remove(user)
-
-
-class Device(object):
-    def __init__(self, name, dev_type, dev_default_status):
-        self.name = name;
-        self.dev_type = dev_type;
-        self.status = dev_default_status
-        self.defaultStatus = dev_default_status;        
-
-    def printData(self):
-        print self.name, ":", self.dev_type;
-
-
-class DeviceList(object):
-    def __init__(self):
-        self.innerList = []
-
-    def printDeviceList(self):
-        for dev in self.innerList:
-            dev.printData()
-
-    def getList(self):
-        return self.innerList
-
-    def getitem(self, it):
-        return self.innerList[it]
-
-    def addDevice(self, name, type, defaultStatus = "off"):
-        self.innerList.append(Device(name, type, defaultStatus))
-
-    def removeDevice(self, name):
-        for dev in self.innerList:
-            if (dev.name == name):
-                self.innerList.remove(dev)
-# format:
-# name, devtype, status -- all strings
-# 
-    def getDiseasedDevicesList(self):
-        deadDevs = []
-        for dev in self.innerList:
-            if (dev.status != dev.defaultStatus):
-                deadDevs.append(dev)
-        return deadDevs
+from ocd.devices import Device, DeviceList
+from ocd.communicator import DevCommunicator
+from ocd.user import Users
 
 
 class App(object):
+
     def __init__(self, master):
         self.buttons = []
         self.innerMap = {}
@@ -196,9 +84,6 @@ class App(object):
         print "hi there, everyone!"
 
 
-
-
-
 class MyDialog_dev(tkSimpleDialog.Dialog):
 
     def body(self, master):
@@ -227,6 +112,7 @@ class MyDialog_dev(tkSimpleDialog.Dialog):
         self.result["default"] = second;
         #print first, second # or something
 
+
 class MyDialog_user(tkSimpleDialog.Dialog):
 
     def body(self, master):
@@ -248,7 +134,6 @@ class MyDialog_user(tkSimpleDialog.Dialog):
         self.result["name"] = first;
         self.result["id"] = second;
         #print first, second # or something
-
 
 
 if __name__ == "__main__":
