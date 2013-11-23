@@ -1,27 +1,41 @@
+import logging
+
+import tkSimpleDialog
 from Tkinter import *
 from tooltip import *
-class I2C_emulator:
-    def __init__(self):
-        print "i2c emulator started"
 
-class SPI_emulator:
+
+class I2C_emulator(object):
+    def __init__(self):
+        logging.info("i2c emulator started")
+
+
+class SPI_emulator(object):
     def __init__(self):
         print "spi emulator started"
-class OneWire_emulator:
+
+
+class OneWire_emulator(object):
     def __init__(self):
         print "spi emulator started"
 
-class DevCommunicator:
+
+class DevCommunicator(object):
+
+    def __init__(self):
+        self.innerMap = {}
+        self.innerMap['fridge'] = "fridgeHandler"
+        self.innerMap['door'] = "doorHandler"
+        self.innerMap['clothing iron'] = "ironHandler"
+
 
     def fridgeHandler(self, message): 
-        #print "fridge"
         if (message == "turn off"):
             return "fridge turned off"
         if (message == "turn on"):
             return "fridge turned on"
         else:
             return "unknown message to fridge"
-
 
     def doorHandler(self, message):
         if (message == "unlock"):
@@ -44,45 +58,39 @@ class DevCommunicator:
             print getattr(self,self.innerMap[str(deviceName)])(message)
         except(KeyError):
             print("Device not bound to Raspberry hub!");
-            
-        
-    def __init__(self):
-        self.innerMap = {}
-        self.innerMap['fridge'] = "fridgeHandler"
-        self.innerMap['door'] = "doorHandler"
-        self.innerMap['clothing iron'] = "ironHandler"
-    
 
 
-class User:
+class User(object):
     def __init__(self, name, googleCloudId):
         self.name = name
         self.googleCloudId = googleCloudId
 
-class Users:
+
+class Users(object):
     def __init__(self):
         table = []
+
     def addUser(self, name, googleCloudId):
         self.table.append(User(name, googleCloudId))
+
     def removeUser(self, name):
         for user in self.table:
             if (user.name == name):
                 self.table.remove(user)
-    
 
-class Device:
+
+class Device(object):
     def __init__(self, name, dev_type, dev_default_status):
         self.name = name;
         self.dev_type = dev_type;
         self.status = dev_default_status
         self.defaultStatus = dev_default_status;        
-        
 
     def printData(self):
         print self.name, ":", self.dev_type;
 
 
-class DeviceList:
+class DeviceList(object):
     def __init__(self):
         self.innerList = []
 
@@ -112,11 +120,25 @@ class DeviceList:
             if (dev.status != dev.defaultStatus):
                 deadDevs.append(dev)
         return deadDevs
-                
 
 
+class App(object):
+    def __init__(self, master):
+        self.buttons = []
+        self.innerMap = {}
+        self.frame = Frame(master)
+        self.frame.pack()
+        self.devs = DeviceList()
 
-class App:
+        self.devs.addDevice("fridge", "device", "on")
+        self.devs.addDevice("door", "lock", "locked");
+        self.devs.addDevice("clothing iron", "device", "off");
+
+        self.devs.printDeviceList()
+        self.initStaticButtons()
+        self.initDeviceButtons()
+        self.devc = DevCommunicator()
+
     def initDeviceButtons(self):
         i = 0
         for button in self.buttons:
@@ -136,12 +158,7 @@ class App:
 #            print "110"
  #            button.pack(side=LEFT)
 
-
-
-
-    
     def toggleButton(self, number):
-#        self.buttons[number].config(fg = "blue")
         dev = self.devs.getitem(number)
         if (dev.status != dev.defaultStatus):
             dev.status = dev.defaultStatus;
@@ -152,21 +169,7 @@ class App:
         self.initDeviceButtons()
         print("fail", number)
                 
-    def __init__(self, master):
-        self.buttons = []
-        self.innerMap = {}
-        self.frame = Frame(master)
-        self.frame.pack()
-        self.devs = DeviceList()
-
-        self.devs.addDevice("fridge", "device", "on")
-        self.devs.addDevice("door", "lock", "locked");
-        self.devs.addDevice("clothing iron", "device", "off");
-
-        self.devs.printDeviceList()
-        self.initStaticButtons()
-        self.initDeviceButtons()
-        self.devc = DevCommunicator()
+    
     
     def addDeviceDialog(self):
         d = MyDialog_dev(root)
@@ -180,8 +183,6 @@ class App:
         d = MyDialog_user(root)
         if (d.result != None):    
             self.devs.addUser(d.result['name'], d.result['id'])
-
-            
         print "invoked addDevDialog"
                 
     def initStaticButtons(self):
@@ -191,13 +192,12 @@ class App:
         self.addDeviceButton = b
         self.addDeviceButton.pack(side=BOTTOM)
 
-#        
     def say_hi(self):
         print "hi there, everyone!"
 
 
 
-import tkSimpleDialog
+
 
 class MyDialog_dev(tkSimpleDialog.Dialog):
 
@@ -251,9 +251,8 @@ class MyDialog_user(tkSimpleDialog.Dialog):
 
 
 
-
-
-root = Tk()
-app = App(root)
-root.mainloop()
-#root.destroy() # optional; see description below
+if __name__ == "__main__":
+    root = Tk()
+    app = App(root)
+    root.mainloop()
+    #root.destroy() # optional; see description below
