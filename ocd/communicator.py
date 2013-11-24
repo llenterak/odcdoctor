@@ -28,11 +28,14 @@ class DevCommunicator(object):
             return "clothing iron turned off"
         if (message == "turn on"):
             return "clothing iron turned on. Why would you do that remotely? 0_o"
+        if (message == "refresh"):
+            return refreshIron();
         else:
             return "unknown message to clothing iron"
     
-    def askDevice(self, deviceName, message):
+    def askDevice(self, device, message):
         try:
-            print getattr(self,self.innerMap[str(deviceName)])(message)
+            
+            print getattr(self,self.innerMap[str(device.name)])(message)
         except(KeyError):
             print("Device not bound to Raspberry hub!");

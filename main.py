@@ -25,9 +25,12 @@ class App(object):
     def refresh_vals(self, message):
         try:
             f = open('ocd/values.txt', 'r')
-            for line in f:
+            for line_raw in f:
+                
+                line = line_raw.rstrip()
+                print line
                 devname =  line[:line.find(':')]
-                status = line[line.find(':'):]
+                status = line[line.find(':') + 1:]
                 for dev in self.devs.getList():
                     #print devname
                     if (dev.name == devname):
