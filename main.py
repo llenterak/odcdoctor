@@ -40,11 +40,12 @@ class App(object):
         payload = {"device_name": devname, "status": status}
         self.notification.send(payload)
         print "sending message to user: " + user.name + " that " + devname + " is " + status #!
-        
         self.initDeviceButtons()
+
     def sendUrgentMessage(self, devname, status):
         for user in self.users.getList():
             self.sendMessageToUser(devname, status, user)
+
     def refresh_vals(self, message):
         try:
             f = open('ocd/values.txt', 'r')
@@ -60,7 +61,6 @@ class App(object):
                         if (dev.status != status):   #status has changed and we just learnt 
                             dev.status = status
                             self.sendUrgentMessage(devname, status)
-                            
             f.close()
             
         except(IOError):
@@ -99,9 +99,8 @@ class App(object):
         self.devc.askDevice(dev, "toggle")
         self.initDeviceButtons()
         print("fail", number)
-                
-    
-    
+
+
     def addDeviceDialog(self):
         d = MyDialog_dev(root)
         if (d.result != None):    
@@ -115,7 +114,7 @@ class App(object):
         if (d.result != None):    
             self.devs.addUser(d.result['name'], d.result['id'])
         print "invoked addDevDialog"
-                
+
     def initStaticButtons(self):
         self.addUserButton = Button(self.frame, text="add user", command=self.addUserDialog)
         self.addUserButton.pack(side=BOTTOM)
@@ -179,10 +178,6 @@ class MyDialog_user(tkSimpleDialog.Dialog):
         self.result["name"] = first;
         self.result["id"] = second;
         #print first, second # or something
-
-
-
- 
 
 
 if __name__ == "__main__":
