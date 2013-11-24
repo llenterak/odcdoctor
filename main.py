@@ -2,7 +2,7 @@ import logging
 import threading
 import tkSimpleDialog
 from Tkinter import *
-from RepeatingTimer import *
+#from RepeatingTimer import *
 from time import sleep
 from tooltip import *
 
