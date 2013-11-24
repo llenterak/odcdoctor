@@ -1,8 +1,10 @@
+import json
 import logging
 import threading
+
 import tkSimpleDialog
 from Tkinter import *
-from RepeatingTimer import *
+# from RepeatingTimer import *
 from time import sleep
 from tooltip import *
 
@@ -10,12 +12,33 @@ from tooltip import *
 from ocd.devices import Device, DeviceList
 from ocd.communicator import DevCommunicator
 from ocd.user import Users
+from ocd.notification import PostNotification
 
 
 class App(object):
     
+    def __init__(self, master):
+        self.buttons = []
+        self.innerMap = {}
+        self.frame = Frame(master)
+        self.frame.pack()
+        self.devs = DeviceList()
+        self.timer = threading.Timer(1, self.refresh_vals, args=[""])
+        self.timer.start()
+        self.devs.addDevice("fridge", "device", "on")
+        self.devs.addDevice("door", "lock", "locked");
+        self.devs.addDevice("clothing iron", "device", "off");
+        self.users = Users()
+        self.users.addUser("Tolea", "tolean777@gmail.com")
+        self.devs.printDeviceList()
+        self.initStaticButtons()
+        self.initDeviceButtons()
+        self.devc = DevCommunicator()
+        self.notification = PostNotification("http://ocdoctor.herokuapp.com/notification")
 
     def sendMessageToUser(self, devname, status, user):
+        payload = {"device_name": devname, "status": status}
+        self.notification.send(payload)
         print "sending message to user: " + user.name + " that " + devname + " is " + status #!
         
         self.initDeviceButtons()
@@ -46,25 +69,6 @@ class App(object):
         print threading.active_count()
         if (self != None):
             self.timer.start()
-        
-
-    def __init__(self, master):
-        self.buttons = []
-        self.innerMap = {}
-        self.frame = Frame(master)
-        self.frame.pack()
-        self.devs = DeviceList()
-        self.timer = threading.Timer(1, self.refresh_vals, args=[""])
-        self.timer.start()
-        self.devs.addDevice("fridge", "device", "on")
-        self.devs.addDevice("door", "lock", "locked");
-        self.devs.addDevice("clothing iron", "device", "off");
-        self.users = Users()
-        self.users.addUser("Tolea", "tolean777@gmail.com")
-        self.devs.printDeviceList()
-        self.initStaticButtons()
-        self.initDeviceButtons()
-        self.devc = DevCommunicator()
 
     def initDeviceButtons(self):
         i = 0

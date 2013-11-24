@@ -1,0 +1,5 @@
+Werkzeug==0.9.4
+argparse==1.2.1
+python-gcm==0.1.4
+requests==2.0.1
+wsgiref==0.1.2
