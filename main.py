@@ -1,8 +1,11 @@
 import logging
-
+import threading
 import tkSimpleDialog
 from Tkinter import *
+from RepeatingTimer import *
+from time import sleep
 from tooltip import *
+
 
 from ocd.devices import Device, DeviceList
 from ocd.communicator import DevCommunicator
@@ -10,6 +13,37 @@ from ocd.user import Users
 
 
 class App(object):
+    
+
+    def sendMessageToUser(self, devname, status, user):
+        print "sending message to user: " + user.name + " that " + devname + " is " + status #!
+        
+        self.initDeviceButtons()
+    def sendUrgentMessage(self, devname, status):
+        for user in self.users.getList():
+            self.sendMessageToUser(devname, status, user)
+    def refresh_vals(self, message):
+        try:
+            f = open('ocd/values.txt', 'r')
+            for line in f:
+                devname =  line[:line.find(':')]
+                status = line[line.find(':'):]
+                for dev in self.devs.getList():
+                    #print devname
+                    if (dev.name == devname):
+                        if (dev.status != status):   #status has changed and we just learnt 
+                            dev.status = status
+                            self.sendUrgentMessage(devname, status)
+                            
+            f.close()
+            
+        except(IOError):
+            print "no input file"
+        self.timer = threading.Timer(1, self.refresh_vals, args=[""])
+        print threading.active_count()
+        if (self != None):
+            self.timer.start()
+        
 
     def __init__(self, master):
         self.buttons = []
@@ -17,11 +51,13 @@ class App(object):
         self.frame = Frame(master)
         self.frame.pack()
         self.devs = DeviceList()
-
+        self.timer = threading.Timer(1, self.refresh_vals, args=[""])
+        self.timer.start()
         self.devs.addDevice("fridge", "device", "on")
         self.devs.addDevice("door", "lock", "locked");
         self.devs.addDevice("clothing iron", "device", "off");
-
+        self.users = Users()
+        self.users.addUser("Tolea", "tolean777@gmail.com")
         self.devs.printDeviceList()
         self.initStaticButtons()
         self.initDeviceButtons()
@@ -38,7 +74,7 @@ class App(object):
                 col = "green"
             else:
                 col = "red"
-            b = Button(self.frame, text = dev.name, fg=col, command = lambda it = i: self.toggleButton(it - 1))
+            b = Button(self.frame, text = dev.name, bg=col, command = lambda it = i: self.toggleButton(it - 1))
             b.pack(side=LEFT)
             self.buttons.append(b)
             t1 = ToolTip(b, follow_mouse=1, text=dev.status)
@@ -53,7 +89,7 @@ class App(object):
         else:
             dev.status = "alternateStatus";
         print dev.name
-        self.devc.askDevice(str(dev.name), "toggle")
+        self.devc.askDevice(dev, "toggle")
         self.initDeviceButtons()
         print("fail", number)
                 
@@ -91,15 +127,17 @@ class MyDialog_dev(tkSimpleDialog.Dialog):
         Label(master, text="name").grid(row=0)
         Label(master, text="type").grid(row=1)
         Label(master, text="default").grid(row=2)
-
+        Label(master, text="interface").grid(row=3)
 
         self.e1 = Entry(master)
         self.e2 = Entry(master)
         self.e3 = Entry(master)
+        self.e4 = Entry(master)
 
         self.e1.grid(row=0, column=1)
         self.e2.grid(row=1, column=1)
         self.e3.grid(row=2, column=1)        
+        self.e4.grid(row=3, column=1)
         return self.e1 # initial focus
 
     def apply(self):
@@ -136,8 +174,12 @@ class MyDialog_user(tkSimpleDialog.Dialog):
         #print first, second # or something
 
 
+
+ 
+
+
 if __name__ == "__main__":
     root = Tk()
     app = App(root)
     root.mainloop()
-    #root.destroy() # optional; see description below
+    root.destroy() # optional; see description below

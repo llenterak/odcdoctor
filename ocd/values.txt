@@ -1,0 +1,3 @@
+iron:on
+iron:onasdsd
+door:unlocked
